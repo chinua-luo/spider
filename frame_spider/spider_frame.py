@@ -1,3 +1,16 @@
+#!/usr/bin/env python # 保证可以直接Unix/Linux/Mac上运行
+# -*- encoding: utf-8 -*-
+'''
+@File    :   spider_frame.py
+@Time    :   2019/04/11 00:45:51
+@Author  :   Lucifer 
+@Version :   1.0
+@Contact :   chinuagao@gmail.com
+@License :   (C)Copyright 2017-2018
+@Desc    :   None
+'''
+# here put the import lib
+import requests
 # 爬虫代码框架
 # 爬虫调度器 URL管理器 HTML下载器 HTML解析器　数据储存器
 # 各个作用部件的作用
@@ -13,7 +26,6 @@
 
 # 数据处理器:就是将HTML下载器发送过来的数据储存到本地
 
-import requests
 
 # URLManager.py
 
