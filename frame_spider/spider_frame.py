@@ -106,7 +106,7 @@ class HTMLParser(object):
         new_urls = set()
         for link in range(1, 100):
             # 添加新的url
-            new_url = "http//www.runoob.com/w3cnote/page/" + str(link)
+            new_url = "http://www.runoob.com/w3cnote/page/" + str(link)
             new_urls.add(new_url)
             print(new_urls)
         return new_urls
@@ -127,6 +127,101 @@ class HTMLParser(object):
         data['summary'] = summary.get_text()
         return data
 
+# 数据储存器
+# DataOutput.py
+import codecs
+class DataOutput(object):
+    
+    def __init__(self):
+        self.datas = []
+    
+    def store_data(self, data):
+        if data is None:
+            return
+        self.datas.append(data)
+    
+    def output_html(self):
+        fout = codecs.open('baike.html', 'a', encoding='utf-8')
+        """ Open an encoded file using the given mode and return
+        a wrapped version providing transparent encoding/decoding.
+
+        Note: The wrapped version will only accept the object format
+        defined by the codecs, i.e. Unicode objects for most builtin
+        codecs. Output is also codec dependent and will usually be
+        Unicode as well.
+
+        Underlying encoded files are always opened in binary mode.
+        The default file mode is 'r', meaning to open the file in read mode.
+
+        encoding specifies the encoding which is to be used for the
+        file.
+
+        errors may be given to define the error handling. It defaults
+        to 'strict' which causes ValueErrors to be raised in case an
+        encoding error occurs.
+
+        buffering has the same meaning as for the builtin open() API.
+        It defaults to line buffered.
+
+        The returned wrapped file object provides an extra attribute
+        .encoding which allows querying the used encoding. This
+        attribute is only available if an encoding was specified as
+        parameter.
+
+    """
+        fout.write("<html>")
+        fout.write("<body>")
+        fout.write("<table>")
+        for data in self.datas:
+            fout.write("<tr>")
+            fout.write("<td>%s</td>" % data['url'])
+            fout.write("<td>{%s}</td>" % data['title'])
+            fout.write("<td>[%s]</td>" % data['summary'])
+            fout.write("</tr>")
+            self.datas.remove(data)
+        fout.write("</table>")
+        fout.write("</body>")
+        fout.write("</html>")
+        fout.close()
+
+
+# 爬虫调度器
+# SpiderController.py
+
+class SpiderController(object):
+
+    def __init__(self):
+        self.manager = URLManager()
+        self.downloader = HTMLDownload()
+        self.parser = HTMLParser()
+        self.output = DataOutput()
+    
+    def crawl(self, root_url):
+        # 添加URl入口
+        self.manager.add_new_url(root_url)
+        # 判断url管理器中是否有新的url,同时判断抓取多少个url
+        while (self.manager.has_new_urls() and self.manager.old_url_size() < 100):
+            try:
+                # 从URL管理器获取新的URL
+                new_url = self.manager.get_new_url()
+                print(new_url)
+                # HTML下载器下载网页
+                html = self.downloader.download(new_url)
+                # HTML解析器抽取网页数据
+                new_urls, data = self.parser.parser(new_url, html)
+                # 将抽取的url添加到URL管理器中
+                self.manager.add_new_urls(new_urls)
+                # 数据储存器储存文件
+                self.output.store_data(data)
+                print("以及抓取%s个链接" % self.manager.old_url_size())
+            except Exception as identifier:
+                print("failed")
+                print(identifier)
+            # 数据储存器将文件输出成指定的格式
+            self.output.output_html()
+            
+
 
 if __name__ == "__main__":
-    pass
+    spider = SpiderController()
+    spider.crawl("http://www.runoob.com/w3cnote/page/1")
