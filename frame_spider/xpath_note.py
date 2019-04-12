@@ -21,7 +21,7 @@ from lxml import etree
 
 exm: //title[@lang='eng'] 代表选取所有名称为title, 属性lang的值为'eng'的节点
 '''
-html = etree.parse('./downloads/text.html', etree.HTMLParser())
+html = etree.parse('./downloads/text.html', etree.HTMLParser(encoding='utf8')) # 注意编码
 # res = html.xpath("//*")  #  * 代表匹配所有节点 i.e. HTML文本中所有节点都会被捕获, 返回一个列表
 # print(res) # 每个元素都是Element类型
 
@@ -53,7 +53,7 @@ html = etree.parse('./downloads/text.html', etree.HTMLParser())
 # print(res[0])  # 文本 列表形式
 
 
-# res = html.xpath('//a[@href="http://www.runoob.com/ado"]/@title')
+# res = html.xpath('//a[@href="http://www.runoob.com/ajax"]/@title')
 # # 选取所有href属性为"http://www.runoob.com/ado"的a节点的title属性
 # print(type(res[0]))  # 列表形式 值  <class 'lxml.etree._ElementUnicodeResult'>
 # print(str(res[0]))
@@ -79,7 +79,7 @@ html = etree.parse('./downloads/text.html', etree.HTMLParser())
 
 # 节点轴选择
 res = html.xpath('//a[last()]/ancestor::*')  # 调用ancestor轴其后跟::, *匹配所有节点
-print(res)
+# print(res)
 res = html.xpath('//a[last()]/ancestor::div')  # 调用ancestor轴其后跟::, 匹配div节点
 res = html.xpath('//a[last()]/attribute::*')  # 调用attribute轴其后跟::, *获取所有属性 可以加限定条件
 res = html.xpath('//a[last()]/child::*')  # 调用child轴其后跟::, *匹配所有直接子节点 可以加限定条件
