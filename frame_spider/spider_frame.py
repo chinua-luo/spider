@@ -55,6 +55,7 @@ class URLManager(object):
         return new_urls
     
     def add_new_url(self, url):
+        # ctrl+alt+t (window) 生成函數頭部
         # 将新连接添加到未爬取的集合中(单个链接)
 
         if url is None:
@@ -120,7 +121,7 @@ class HTMLParser(object):
             # 添加新的url
             new_url = "http://www.runoob.com/w3cnote/page/" + str(link)
             new_urls.add(new_url)
-            print(new_urls)
+            # print(new_urls)
         return new_urls
     
     def _get_new_data(self, page_url, soup):
@@ -133,7 +134,7 @@ class HTMLParser(object):
         data = {}
         data['url'] = page_url
         title = soup.find('div', class_='post-intro').find('h2')
-        print(title)
+        # print(title)
         data['title'] = title.get_text()
         summary = soup.find('div', class_='post-intro').find('p')
         data['summary'] = summary.get_text()
@@ -153,7 +154,7 @@ class DataOutput(object):
         self.datas.append(data)
     
     def output_html(self):
-        fout = codecs.open('baike.html', 'a', encoding='utf-8')
+        fout = codecs.open('./downloads/baike.html', 'a', encoding='utf-8')
         """ Open an encoded file using the given mode and return
         a wrapped version providing transparent encoding/decoding.
 
@@ -216,7 +217,7 @@ class SpiderController(object):
             try:
                 # 从URL管理器获取新的URL
                 new_url = self.manager.get_new_url()
-                print(new_url)
+                # print(new_url)
                 # HTML下载器下载网页
                 html = self.downloader.download(new_url)
                 # HTML解析器抽取网页数据
@@ -225,7 +226,7 @@ class SpiderController(object):
                 self.manager.add_new_urls(new_urls)
                 # 数据储存器储存文件
                 self.output.store_data(data)
-                print("以及抓取%s个链接" % self.manager.old_url_size())
+                print("已经抓取%s个链接" % self.manager.old_url_size())
             except Exception as identifier:
                 print("failed")
                 print(identifier)
