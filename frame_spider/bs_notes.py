@@ -11,6 +11,7 @@
 '''
 # here put the import lib
 from bs4 import BeautifulSoup
+import re
 
 html = open('./downloads/text.html', 'r', encoding='utf-8')
 soup = BeautifulSoup(html, 'lxml')  # 初始化时候, 对不标准的 html 自动更正格式
@@ -63,5 +64,57 @@ and a value yielded by the iterable argument. enumerate is useful for obtaining 
 
 
 # 提取信息
-print(soup.a.next_sibling) # 有可能是空格
-print(list(enumerate(soup.a.next_siblings))[1])
+# print(soup.a.next_sibling) # 有可能是空格
+# print(list(enumerate(soup.a.next_siblings))[1])
+
+# 方法选择器
+# soup.find_all()
+'''
+def find_all(name=None, attrs={}, recursive=True, text=None, limit=None, **kwargs)
+API
+Extracts a list of Tag objects that match the given
+criteria.  You can specify the name of the Tag and any
+attributes you want the Tag to have.
+
+The value of a key-value pair in the 'attrs' map can be a
+string, a list of strings, a regular expression object, or a
+callable that takes a string and returns whether or not the
+string matches for some custom definition of 'matches'. The
+same is true of the tag name."""
+'''
+# print(soup.find_all(name = 'a'))
+# print(type(soup.find_all(name = 'a')[0]))  # <class 'bs4.element.Tag'> 标签类型 可以嵌套
+
+# print(soup.find_all(attrs = {'title': '西瓜hhhh'}))  # 返回列表, 每一个均为标签类型
+# print(soup.find_all(class_ = 'sdsd'))  # 也可以这样查询属性class值为sdsd的标签(class_是由于class是python内置关键词)
+
+# text 匹配节点内容
+# print(soup.find_all(text = re.compile('D')))
+# 返回所有匹配正则表达式的节点文本内容
+
+# find 返回第一个匹配到的元素 API相同
+# soup.find_all_next()
+# soup.find_next()
+# soup.find_next_sibling()
+# soup.find_next_siblings()
+
+# soup.find_parent()
+# soup.find_parents()
+
+# soup.find_previous()
+# soup.find_all_previous()
+# soup.find_previous_sibling()
+# soup.find_previous_siblings()
+
+# css选择器
+# print(soup.select('div a')) # 所有div下所有a节点
+# print(type(soup.select('div a')[1])) # <class 'bs4.element.Tag'> 标签类型 可以嵌套
+
+# 每个节点类型仍是Tag类型 仍可以 a['title'] 或 a.attrs['title'] 获取属性
+
+# 获取文本 二者一样获取文本
+for i in soup.select('a'):
+    print(i.get_text())
+    print(i.string)
+
+
