@@ -24,7 +24,7 @@ DATA = {
     "short_desc": ' '
 }
 
-
+#  
 
 # 和table条目保持一致
 VALUES = ', '.join(['%s'] * len(DATA))

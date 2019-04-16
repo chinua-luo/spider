@@ -30,7 +30,7 @@ bcs.DATA = {
 }
 # CONDITION = "name like '%几%论%' "
 CONDITION = ''
-
+#  
 
 class Window(bcs.QtWidgets.QDialog):
     def __init__(self, parent=None):
