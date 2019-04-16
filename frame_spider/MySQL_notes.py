@@ -110,7 +110,7 @@ import pymysql
 #                        password="Luozhijun199502@", port=3306, db='spiders')  # 端口默认3306 需要指定数据库
 # coursor = db.cursor()
 # data = {
-#     "id" : '201828000206075',
+#     "id" : '201828000206076',
 #     "name" : 'Ferry',
 #     "age" : 22
 # }
@@ -122,9 +122,11 @@ import pymysql
 # # ON DUPLICATE KEY UPDATE 如果主键已经存在就执行更新操作
 # update = ', '.join(["{key} = %s".format(key=key) for key in data])  # 列表生成式
 # sql += update
+# print(sql)
+# # INSERT INTO students (id, name, age) values(%s, %s, %s) ON DUPLICATE KEY UPDATE id = %s, name = %s, age = %s  update的内容
 # try:
 #     if coursor.execute(sql, tuple(data.values())*2):  # 执行语句 与元组值
-#         print(tuple(data.values()) * 2)
+#         # print(tuple(data.values()) * 2)
 #         print("Successful")
 #         db.commit()  # 这个语句才是真正将语句提交到数据库执行的方法, 对于数据的插入更新,删除,都需要调用该方法
 #         # Commit changes to stable storage.
@@ -155,23 +157,23 @@ import pymysql
 # db.close()
 
 # 查询数据
-db = pymysql.connect(host='localhost', user="root",
-                       password="Luozhijun199502@", port=3306, db='spiders')  # 端口默认3306 需要指定数据库
-coursor = db.cursor()
-table = 'students'
-condition = 'age > 20'  # 运算符有很多, >, <, =, like等, 条件连接符AND, OR
-sql = 'SELECT * FROM {table} WHERE {condition}'.format(table=table, condition=condition)
-try:
-    coursor.execute(sql)  # 执行语句 与元组值
-    print("Count:", coursor.rowcount)
-    one = coursor.fetchone()  # 获取一个 .fetchall()获取所有, fetchmany()获取多个, 
-    print(one)
-    # 内部有个偏移指针来指向查询结果, 最开始偏移指针指向第一条数据, 取一次以后, 指针偏移到下一个数据, 这样再取就取到下一条数据
-    db.commit()  # 这个语句才是真正将语句提交到数据库执行的方法, 对于数据的插入更新,删除,都需要调用该方法
-    # Commit changes to stable storage.
-    # See Connection.commit() <https://www.python.org/dev/peps/pep-0249/\#commit>_ in the specification.
-except:
-    db.rollback() # 报错执行数据回滚, 相当于什么都没发生
-    # Roll back the current transaction.
-    # See Connection.rollback() <https://www.python.org/dev/peps/pep-0249/\#rollback>_ in the specification.
-db.close()
+# db = pymysql.connect(host='localhost', user="root",
+#                        password="Luozhijun199502@", port=3306, db='spiders')  # 端口默认3306 需要指定数据库
+# coursor = db.cursor()
+# table = 'students'
+# condition = 'age > 20'  # 运算符有很多, >, <, =, like等, 条件连接符AND, OR
+# sql = 'SELECT * FROM {table} WHERE {condition}'.format(table=table, condition=condition)
+# try:
+#     coursor.execute(sql)  # 执行语句 与元组值
+#     print("Count:", coursor.rowcount)
+#     one = coursor.fetchone()  # 获取一个 .fetchall()获取所有, fetchmany()获取多个, 
+#     print(one)
+#     # 内部有个偏移指针来指向查询结果, 最开始偏移指针指向第一条数据, 取一次以后, 指针偏移到下一个数据, 这样再取就取到下一条数据
+#     db.commit()  # 这个语句才是真正将语句提交到数据库执行的方法, 对于数据的插入更新,删除,都需要调用该方法
+#     # Commit changes to stable storage.
+#     # See Connection.commit() <https://www.python.org/dev/peps/pep-0249/\#commit>_ in the specification.
+# except:
+#     db.rollback() # 报错执行数据回滚, 相当于什么都没发生
+#     # Roll back the current transaction.
+#     # See Connection.rollback() <https://www.python.org/dev/peps/pep-0249/\#rollback>_ in the specification.
+# db.close()
