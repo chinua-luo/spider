@@ -16,7 +16,9 @@
 from PyQt5.QtWidgets import (QWidget, QSlider, 
     QLabel, QApplication)
 from PyQt5.QtCore import Qt
+# Qt.Horizontal  Qt.Vertical 
 from PyQt5.QtGui import QPixmap
+# QPixmap 像素图控件是用来处理图像的控件
 import sys
 # 模拟的音量控制器。拖动滑块，能改变标签位置的图片
 class Example(QWidget):    

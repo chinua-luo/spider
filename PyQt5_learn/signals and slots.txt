@@ -13,3 +13,231 @@
     PyQt5处理事件方面有个signal and slot机制. Signals and slots用于对象间的通讯.
     事件触发的时候，发生一个signal, slot是用来被Python调用的
     (相当于一个句柄,就是相当于事件的绑定函数)slot只有在事件触发的时候才能调用
+
+当事件或者状态发生改变时，就会发出信号。同时，信号会触发所有与这个事件（信号）相关的函数（槽）。
+信号与槽可以是多对多的关系。一个信号可以连接多个槽，一个槽也可以监听多个信号。
+
+在GUI编程中，当改变一个控件的状态时(如单击了按钮),通常需要通知另一个控件,
+也就是实现了对象之间的通信。在早期的GUI编程中使用的是回调机制，
+在Qt中则使用一种新机制——信号与槽。
+在编写一个类时，要先定义该类的信号与槽，在类中信号与槽进行连接，实现对象之间的数据传输 如下图:
+        -----------                          -----------
+        |          |                         |          |
+        |  发送者   |                         |   槽函数 |
+        ------------                         ------------
+              |                                    ^
+              |                                    |     
+              |                                    |
+              |信号                                 |
+              |                                    |
+              |                                    |     
+             连接  ---------------------------->  接收者
+                                接收
+https://www.riverbankcomputing.com/static/Docs/PyQt5/signals_slots.html
+
+
+1．定义信号
+        通过类成员变量定义信号对象
+    class MyWidget(QWidget):  
+        # 无参数的信号
+        Signal_NoParameters = pyqtSignal()     
+        # 带一个参数(整数)的信号      
+        Signal_OneParameter = pyqtSignal(int)         
+        # 带一个参数(整数或者字符串)的重载版本的信号        
+        Signal_OneParameter_Overload = pyqtSignal([int],[str])  
+        # 带两个参数(整数,字符串)的信号      
+                Signal_TwoParameters = pyqtSignal(int,str)    
+        # 带两个参数([整数,整数]或者[整数,字符串])的重载版本的信号      
+        Signal_TwoParameters_Overload = pyqtSignal([int,int],[int,str]) 
+
+2．定义槽函数
+        定义一个槽函数，它有多个不同的输入参数
+        class MyWidget(QWidget):  
+                def setValue_NoParameters(self):   
+                '''无参数的槽函数'''  
+                        pass  
+
+                def setValue_OneParameter(self,nIndex):   
+                '''带一个参数(整数)的槽函数'''  
+                        pass
+
+                def setValue_OneParameter_String(self,szIndex):   
+                '''带一个参数(字符串)的槽函数'''  
+                        pass 
+
+                def setValue_TwoParameters(self,x,y):   
+                '''带两个参数(整数,整数)的槽函数'''  
+                        pass  
+
+                def setValue_TwoParameters_String(self,x,szY):   
+                '''带两个参数(整数,字符串)槽函数'''  
+                        pass
+3．连接信号与槽函数
+        通过connect方法连接信号与槽函数或者可调用对象
+        app = QApplication(sys.argv)   
+        widget = MyWidget()   
+        # 连接无参数的信号
+        widget.Signal_NoParameters.connect(self.setValue_NoParameters )                                          
+
+        # 连接带一个整数参数的信号
+        widget.Signal_OneParameter.connect(self.setValue_OneParameter)                                         
+
+        # 连接带一个整数参数，经过重载的信号
+        widget.Signal_OneParameter_Overload[int].connect(self.setValue_OneParameter)                              
+
+        # 连接带一个整数参数，经过重载的信号
+        widget.Signal_OneParameter_Overload[str].connect(self.setValue_OneParameter_String )                     
+
+        # 连接一个信号，它有两个整数参数
+        widget.Signal_TwoParameters.connect(self.setValue_TwoParameters )                                        
+
+        # 连接带两个参数(整数,整数)的重载版本的信号
+        widget.Signal_TwoParameters_Overload[int,int].connect(self.setValue_TwoParameters )                      
+
+        # 连接带两个参数(整数,字符串)的重载版本的信号
+        widget.Signal_TwoParameters_Overload[int,str].connect(self.setValue_TwoParameters_String )              
+        widget.show() 
+4．发射信号
+        通过emit方法发射信号
+        class MyWidget(QWidget):  
+
+                def mousePressEvent(self, event):  
+                        # 发射无参数的信号
+                        self.Signal_NoParameters.emit() 
+                        # 发射带一个参数(整数)的信号
+                        self.Signal_OneParameter.emit(1) 
+                        # 发射带一个参数(整数)的重载版本的信号
+                        self.Signal_OneParameter_Overload.emit(1)
+                        # 发射带一个参数(字符串)的重载版本的信号
+                        self.Signal_OneParameter_Overload.emit("abc")
+                        # 发射带两个参数(整数,字符串)的信号
+                        self.Signal_TwoParameters.emit(1,"abc")
+                        # 发射带两个参数(整数,整数)的重载版本的信号
+                        self.Signal_TwoParameters_Overload.emit(1,2)
+                        # 发射带两个参数(整数,字符串)的重载版本的信号
+                        self.Signal_TwoParameters_Overload.emit (1,"abc")
+2 使用自定义参数
+在PyQt编程过程中，经常会遇到给槽函数传递自定义参数的情况，比如有一个信号与槽函数的连接是
+        button1.clicked.connect(show_page)
+我们知道对于clicked信号来说，它是没有参数的；对于show_page函数来说，希望它可以接收参数
+show_page函数像如下这样：
+def show_page(self, name):
+        print(name,"  点击啦")
+于是就产生一个问题——信号发出的参数个数为0, 槽函数接收的参数个数为1, 由于0<1,
+这样运行起来一定会报错（原因是信号发出的参数个数一定要大于槽函数接收的参数个数),
+解决这个问题就是本节的重点：自定义参数的传递.
+
+两种解决方法，其中一种解决方法是使用lambda表达式
+from PyQt5.QtWidgets import QMainWindow, QPushButton , QWidget , QMessageBox, QApplication, QHBoxLayout
+import sys 
+
+class WinForm(QMainWindow):  
+    def __init__(self, parent=None):  
+        super(WinForm, self).__init__(parent)  
+        button1 = QPushButton('Button 1')  
+        button2 = QPushButton('Button 2')  
+
+        button1.clicked.connect(lambda: self.onButtonClick(1)) 
+        button2.clicked.connect(lambda: self.onButtonClick(2))
+# 重点解释onButtonClick()函数是怎样处理从两个按钮传来的信号的。使用lambda表达式传递按钮数字给槽函数，
+# 当然也可以传递其他任何东西，甚至是按钮控件本身（假设槽函数打算把传递信号的按钮修改为不可用的话）
+        layout = QHBoxLayout()  
+        layout.addWidget(button1)  
+        layout.addWidget(button2)  
+
+        main_frame = QWidget()  
+        main_frame.setLayout(layout)       
+        self.setCentralWidget(main_frame)  
+
+    def onButtonClick(self, n):  
+        print('Button {0} 被按下了'.format(n))  
+        QMessageBox.information(self, "信息提示框", 'Button {0} clicked'.format(n))
+
+if __name__ == "__main__":  
+        app = QApplication(sys.argv)  
+        form = WinForm()  
+        form.show()  
+        sys.exit(app.exec_())
+
+另一种解决方法是使用functools中的partial函数
+button1.clicked.connect(partial(self.onButtonClick, 1))         
+button2.clicked.connect(partial(self.onButtonClick, 2))
+
+3 装饰器信号与槽
+所谓装饰器信号与槽，就是通过装饰器的方法来定义信号和槽函数。具体的使用方法如下：
+        @PyQt5.QtCore.pyqtSlot(参数)
+        def on_发送者对象名称_发射信号名称(self, 参数):
+                pass
+这种方法有效的前提是下面的函数已经执行：
+        QMetaObject.connectSlotsByName(QObject)
+在上面代码中，“发送者对象名称”就是使用setObjectName函数设置的名称，
+因此自定义槽函数的命名规则也可以看成：on + 使用setObjectName设置的名称 + 信号名称。
+exm
+from PyQt5 import QtCore 
+from PyQt5.QtWidgets import QApplication  ,QWidget ,QHBoxLayout , QPushButton
+import sys    
+class CustWidget( QWidget ):
+    def __init__(self, parent=None):
+        super(CustWidget, self).__init__(parent)
+
+        self.okButton = QPushButton("OK", self)
+        #使用setObjectName设置对象名称
+        self.okButton.setObjectName("okButton")
+        layout = QHBoxLayout()
+        layout.addWidget(self.okButton)
+        self.setLayout(layout)
+        QtCore.QMetaObject.connectSlotsByName(self)
+        # 此句它是在PyQt 5中根据信号名称自动连接到槽函数的核心代码。
+        # 这行代码用来将QObject中的子孙对象的某些信号按照其objectName连接到相应的槽函数
+        # 看下面代码
+
+    @QtCore.pyqtSlot()    
+    def on_okButton_clicked(self):
+        print( "单击了OK按钮")
+
+if __name__ == "__main__":        
+    app =  QApplication(sys.argv)
+    win = CustWidget()
+    win.show()
+    app.exec_()
+
+假设代码QtCore.QMetaObject.connectSlotsByName(self)已经执行，则下面的代码：
+        @QtCore.pyqtSlot()    
+        def on_okButton_clicked(self):
+                print( "单击了OK按钮")
+会被自动识别为下面的代码(注意，函数中去掉了on,
+因为on会受到connectSlotsByName的影响，加上on运行时会出现问题):
+def __init__(self, parent=None):
+        self.okButton.clicked.connect(self.okButton_clicked)
+def okButton_clicked(self):
+        print("单击了OK按钮")
+这部分代码放在整体文件中
+from PyQt5 import QtCore 
+from PyQt5.QtWidgets import QApplication ,QWidget ,QHBoxLayout , QPushButton
+import sys    
+
+class CustWidget( QWidget ):
+
+    def __init__(self, parent=None):
+        super(CustWidget, self).__init__(parent)
+
+        self.okButton = QPushButton("OK", self)
+        #使用setObjectName设置对象名称
+        self.okButton.setObjectName("okButton")        
+        layout =  QHBoxLayout()
+        layout.addWidget(self.okButton)
+        self.setLayout(layout)                
+        # QtCore.QMetaObject.connectSlotsByName(self)
+        self.okButton.clicked.connect(self.okButton_clicked)
+
+    def okButton_clicked(self):
+        print( "单击了OK按钮")
+
+if __name__ == "__main__":        
+    app =  QApplication(sys.argv)
+    win = CustWidget()
+    win.show()
+    sys.exit(app.exec_())
+
+
+# https://blog.csdn.net/broadview2006/article/details/80132757
